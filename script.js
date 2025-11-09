@@ -88,13 +88,47 @@ const observer = new IntersectionObserver((entries) => {
 
 // Observe elements for animation
 document.addEventListener('DOMContentLoaded', () => {
-    const animateElements = document.querySelectorAll('.skill-category, .timeline-item, .education-card, .project-card, .contact-item');
+    const animateElements = document.querySelectorAll('.skill-category, .timeline-item, .education-card, .project-card-wrapper, .contact-item');
     
     animateElements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
         el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
         observer.observe(el);
+    });
+    
+    // Project card flip functionality
+    const projectCards = document.querySelectorAll('.project-card');
+    projectCards.forEach(card => {
+        // Click handler
+        card.addEventListener('click', function(e) {
+            // Don't flip if clicking on the GitHub link
+            if (e.target.closest('.project-github-link')) {
+                return;
+            }
+            this.classList.toggle('flipped');
+        });
+        
+        // Touch handler for mobile
+        let touchStartX = 0;
+        card.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+        });
+        
+        card.addEventListener('touchend', function(e) {
+            if (!touchStartX) return;
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            
+            // Swipe left or right to flip
+            if (Math.abs(diff) > 50) {
+                if (e.target.closest('.project-github-link')) {
+                    return;
+                }
+                this.classList.toggle('flipped');
+            }
+            touchStartX = 0;
+        });
     });
 });
 
